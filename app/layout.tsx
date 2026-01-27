@@ -1,44 +1,48 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./components/providers";
+import background from "./public/boost.png";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  display: "swap",
-});
+import { headers } from "next/headers";
+import ContextProvider from "./components/context";
+import Navbar from "./components/layout/Navbar";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Solana dApp Starter",
-  description: "A minimal Next.js starter powered by @solana/react-hooks",
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
-  },
+  title: "AppKit Example App",
+  description: "Powered by Reown",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+  const headersObj = await headers();
+  const cookies = headersObj.get("cookie");
+
   return (
     <html lang="en">
-      <Providers>
-        <body
-          suppressHydrationWarning
-          className={`${inter.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </Providers>
+      <body className={inter.className}>
+        {/* Global background image */}
+        <div className="relative min-h-screen overflow-hidden text-white">
+          <div
+            className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${background.src})` }}
+          />
+
+          {/* Dark overlay for readability */}
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-black/60" />
+
+          {/* Glass layer across the whole app */}
+          <div className="relative min-h-screen bg-white/5 backdrop-blur-xl">
+            <Navbar />
+
+            <ContextProvider cookies={cookies}>
+              <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
+            </ContextProvider>
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
