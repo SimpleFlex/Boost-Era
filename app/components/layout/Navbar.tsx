@@ -14,16 +14,19 @@ export default function Navbar() {
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center">
                 <span className="text-2xl font-extrabold tracking-tight">
-                  <span className="bg-gradient-to-r from-fuchsia-300 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-fuchsia-300 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
                     Boost
                   </span>
                   <span className="text-white/90">Era</span>
                 </span>
               </Link>
 
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-1.5 text-sm font-semibold text-white/85">
-                Beta <span aria-hidden>🚀</span>
-              </span>
+              <Link
+                href="/leaderboard"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-xl transition hover:bg-white/10"
+              >
+                🏆 Leaderboard
+              </Link>
             </div>
 
             {/* Row 2: MemeDrop + Connect */}
@@ -46,16 +49,19 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
               <Link href="/" className="flex items-center">
                 <span className="text-xl font-extrabold tracking-tight">
-                  <span className="bg-gradient-to-r from-fuchsia-300 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
+                  <span className="bg-linear-to-r from-fuchsia-300 via-cyan-200 to-emerald-200 bg-clip-text text-transparent">
                     Boost
                   </span>{" "}
                   <span className="text-white/90">Era</span>
                 </span>
               </Link>
 
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/80">
-                Beta <span aria-hidden>🚀</span>
-              </span>
+              <Link
+                href="/leaderboard"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/85 backdrop-blur-xl transition hover:bg-white/10"
+              >
+                🏆 Leaderboard
+              </Link>
             </div>
 
             <div className="flex items-center gap-4">

@@ -13,7 +13,7 @@ export default function Hero() {
 
         <p className="mx-auto mt-5 max-w-3xl text-xl leading-snug sm:text-2xl">
           <span className="text-white/85">
-            Get a fully generated promo page
+            Get a full promotion and visibilty
           </span>{" "}
           <span className="text-yellow-300 font-semibold">
             in two simple steps

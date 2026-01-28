@@ -5,7 +5,8 @@ import background from "./public/boost.png";
 
 import { headers } from "next/headers";
 import ContextProvider from "./components/context";
-import Navbar from "./components/layout/Navbar";
+import AnimatedBackground from "./components/layout/AnimatedBackground";
+import Footer from "./components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,22 +24,22 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Global background image */}
         <div className="relative min-h-screen overflow-hidden text-white">
           <div
             className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${background.src})` }}
           />
 
-          {/* Dark overlay for readability */}
           <div className="pointer-events-none absolute inset-0 -z-10 bg-black/60" />
 
-          {/* Glass layer across the whole app */}
-          <div className="relative min-h-screen bg-white/5 backdrop-blur-xl">
-            <Navbar />
+          <div className="relative min-h-screen bg-white/5 backdrop-blur-xl flex flex-col">
+            <AnimatedBackground />
 
             <ContextProvider cookies={cookies}>
-              <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
+              {/* ✅ NO max-w wrapper here */}
+              <div className="flex-1">{children}</div>
+
+              <Footer />
             </ContextProvider>
           </div>
         </div>

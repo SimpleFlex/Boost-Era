@@ -36,3 +36,35 @@
     background-position: 100% 50%;
   }
 }
+
+/* ===== Background particles (stars/emojis) ===== */
+.bg-particle {
+  position: absolute;
+  user-select: none;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
+  will-change: transform, opacity;
+  animation: particleFloat var(--dur, 10s) ease-in-out var(--delay, 0s) infinite;
+}
+
+/* drift + rotate + gentle bob */
+@keyframes particleFloat {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translate3d(var(--dx, 80px), var(--dy, -40px), 0) rotate(180deg);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(360deg);
+    opacity: 0.35;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bg-particle {
+    animation: none !important;
+  }
+}

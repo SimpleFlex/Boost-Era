@@ -1,7 +1,7 @@
 "use client";
 
 import { Rocket, Palette, TrendingUp } from "lucide-react";
-import PlatformLinks from "../platforms/PlatformsLink"; // adjust if your folders differ
+import PlatformPreview from "../platforms/PlatformPreview"; // ✅ use your existing component
 
 export default function HowItWorks() {
   const tokenAddress = "So11111111111111111111111111111111111111112";
@@ -17,7 +17,7 @@ export default function HowItWorks() {
 
           <p className="mx-auto mt-3 max-w-3xl text-base sm:text-lg">
             <span className="text-white/75">Three simple steps to </span>
-            promote your coin get a {""}
+            promote your coin get a{" "}
             <span className="text-green-400 font-semibold">
               share-ready website
             </span>
@@ -109,7 +109,8 @@ export default function HowItWorks() {
             Supported platforms
           </div>
 
-          <PlatformLinks tokenAddress={tokenAddress} />
+          {/* ✅ Use existing component */}
+          <PlatformPreview tokenAddress={tokenAddress} />
         </div>
       </div>
     </section>
