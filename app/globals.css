@@ -1,5 +1,23 @@
 @import "tailwindcss";
 
+/* ✅ SMOOTH SCROLL - Mobile optimized */
+html {
+  scroll-behavior: smooth;
+  /* Better performance on mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  /* Reduce layout thrashing */
+  position: relative;
+}
+
+/* ✅ Smooth scroll for specific elements */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
 .rgb-text {
   background: linear-gradient(
     90deg,
@@ -13,7 +31,6 @@
   background-clip: text;
   color: transparent;
   animation: rgbShift 3.5s linear infinite;
-  /* ✅ Only animate on specific elements, use will-change sparingly */
   will-change: background-position;
 }
 
@@ -39,19 +56,21 @@
   }
 }
 
-/* ===== Background particles (stars/emojis) ===== */
+/* ===== Background particles ===== */
 .bg-particle {
   position: absolute;
   user-select: none;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
-  /* ✅ REMOVED will-change - let browser optimize instead */
-  /* ✅ REMOVED opacity from animation - bake it into initial style */
-  animation: particleFloat var(--dur, 10s) ease-in-out var(--delay, 0s) infinite;
-  /* Use transform3d for GPU acceleration */
+  /* ✅ Only GPU-accelerated transforms */
   will-change: transform;
+  animation: particleFloat var(--dur, 10s) ease-in-out var(--delay, 0s) infinite;
+  /* Ensure particles use GPU */
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform: translateZ(0);
 }
 
-/* ✅ Only animate transform (GPU-accelerated) - removed opacity */
+/* ✅ Only animate transform (GPU) - NO opacity changes */
 @keyframes particleFloat {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
@@ -64,9 +83,119 @@
   }
 }
 
-/* Respect reduced motion */
+/* ===== Blob animations (desktop only) ===== */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.3;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 60, 172, 0.4);
+  top: -50%;
+  left: -50%;
+  animation: blobMove1 15s ease-in-out infinite;
+}
+
+.blob-2 {
+  width: 350px;
+  height: 350px;
+  background: rgba(43, 134, 197, 0.3);
+  top: 50%;
+  right: -10%;
+  animation: blobMove2 18s ease-in-out infinite;
+}
+
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(0, 255, 178, 0.2);
+  bottom: -20%;
+  left: 20%;
+  animation: blobMove3 20s ease-in-out infinite;
+}
+
+@keyframes blobMove1 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(100px, -100px) scale(1.05);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes blobMove2 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-80px, 100px) scale(0.95);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes blobMove3 {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(60px, -80px) scale(1.02);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+/* ✅ Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .bg-particle {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .bg-particle,
+  .blob {
+    animation: none !important;
+    will-change: auto;
+  }
+
+  .rgb-text {
     animation: none !important;
   }
+}
+
+/* ✅ Mobile optimizations */
+@media (max-width: 768px) {
+  .blob {
+    display: none; /* Don't render blobs on mobile */
+  }
+
+  /* Reduce motion on mobile for battery life */
+  .bg-particle {
+    animation-duration: calc(var(--dur, 10s) * 1.2) !important;
+    /* Reduce blur on mobile */
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+  }
+}
+
+/* ✅ Prevent layout shift and optimize repaints */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
 }

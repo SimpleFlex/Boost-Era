@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 
 const ICONS = ["⭐", "✨", "🌟", "💫", "⚡", "💎", "🚀", "🔥", "🪙", "🎯"];
 
@@ -14,7 +14,6 @@ type Particle = {
   delay: string;
   driftX: string;
   driftY: string;
-  opacity: string;
 };
 
 function rand(min: number, max: number) {
@@ -22,20 +21,36 @@ function rand(min: number, max: number) {
 }
 
 export default function AnimatedBackground() {
-  // 🔴 REDUCED from 120 to 50-60 for better performance
-  const COUNT = 50;
+  const [isMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(max-width: 768px)").matches;
+  });
+
+  const [isReduced] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
+
+  // ✅ Drastically reduce particle count on mobile
+  // Desktop: 50, Tablet: 30, Mobile: 15
+  const COUNT = isReduced ? 0 : isMobile ? 15 : 50;
 
   const particles = useMemo<Particle[]>(() => {
     return Array.from({ length: COUNT }).map((_, i) => {
       const icon = ICONS[Math.floor(rand(0, ICONS.length))];
       const left = `${rand(0, 100).toFixed(2)}%`;
       const top = `${rand(0, 100).toFixed(2)}%`;
-      const size = `${rand(12, 26).toFixed(0)}px`;
-      const duration = `${rand(8, 18).toFixed(2)}s`; // Slower = less CPU
-      const delay = `${rand(-18, 0).toFixed(2)}s`;
-      const driftX = `${rand(-120, 120).toFixed(0)}px`;
-      const driftY = `${rand(-90, 90).toFixed(0)}px`;
-      const opacity = `${rand(0.25, 0.9).toFixed(2)}`;
+      const size = isMobile
+        ? `${rand(10, 18).toFixed(0)}px`
+        : `${rand(12, 26).toFixed(0)}px`;
+      const duration = `${rand(10, 20).toFixed(2)}s`; // Slower for smoothness
+      const delay = `${rand(-20, 0).toFixed(2)}s`;
+      const driftX = isMobile
+        ? `${rand(-60, 60).toFixed(0)}px`
+        : `${rand(-120, 120).toFixed(0)}px`;
+      const driftY = isMobile
+        ? `${rand(-50, 50).toFixed(0)}px`
+        : `${rand(-90, 90).toFixed(0)}px`;
 
       return {
         id: i,
@@ -47,19 +62,26 @@ export default function AnimatedBackground() {
         delay,
         driftX,
         driftY,
-        opacity,
       };
     });
-  }, []);
+  }, [COUNT, isMobile]);
+
+  if (isReduced) {
+    return null; // Respect reduced motion preference
+  }
 
   return (
     <div className="pointer-events-none absolute inset-0 -z-20 overflow-hidden">
-      {/* keep your moving blobs if you already have them */}
-      <div className="blob blob-1" />
-      <div className="blob blob-2" />
-      <div className="blob blob-3" />
+      {/* Blobs - only render on desktop */}
+      {!isMobile && (
+        <>
+          <div className="blob blob-1" />
+          <div className="blob blob-2" />
+          <div className="blob blob-3" />
+        </>
+      )}
 
-      {/* particles */}
+      {/* Particles with optimized rendering */}
       {particles.map((p) => (
         <span
           key={p.id}
@@ -73,6 +95,8 @@ export default function AnimatedBackground() {
               "--delay": p.delay,
               "--dx": p.driftX,
               "--dy": p.driftY,
+              // ✅ Set initial opacity in style to avoid animation repaints
+              opacity: "0.6",
             } as React.CSSProperties & Record<string, string>
           }
         >
