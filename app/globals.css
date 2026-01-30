@@ -13,6 +13,8 @@
   background-clip: text;
   color: transparent;
   animation: rgbShift 3.5s linear infinite;
+  /* ✅ Only animate on specific elements, use will-change sparingly */
+  will-change: background-position;
 }
 
 .rainbow-text {
@@ -42,23 +44,23 @@
   position: absolute;
   user-select: none;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
-  will-change: transform, opacity;
+  /* ✅ REMOVED will-change - let browser optimize instead */
+  /* ✅ REMOVED opacity from animation - bake it into initial style */
   animation: particleFloat var(--dur, 10s) ease-in-out var(--delay, 0s) infinite;
+  /* Use transform3d for GPU acceleration */
+  will-change: transform;
 }
 
-/* drift + rotate + gentle bob */
+/* ✅ Only animate transform (GPU-accelerated) - removed opacity */
 @keyframes particleFloat {
   0% {
     transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 0.35;
   }
   50% {
     transform: translate3d(var(--dx, 80px), var(--dy, -40px), 0) rotate(180deg);
-    opacity: 0.95;
   }
   100% {
     transform: translate3d(0, 0, 0) rotate(360deg);
-    opacity: 0.35;
   }
 }
 

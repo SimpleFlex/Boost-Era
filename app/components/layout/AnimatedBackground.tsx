@@ -22,8 +22,8 @@ function rand(min: number, max: number) {
 }
 
 export default function AnimatedBackground() {
-  // Increase count if you want: 80–140 is okay. Don’t go crazy (performance).
-  const COUNT = 120;
+  // 🔴 REDUCED from 120 to 50-60 for better performance
+  const COUNT = 50;
 
   const particles = useMemo<Particle[]>(() => {
     return Array.from({ length: COUNT }).map((_, i) => {
@@ -31,8 +31,8 @@ export default function AnimatedBackground() {
       const left = `${rand(0, 100).toFixed(2)}%`;
       const top = `${rand(0, 100).toFixed(2)}%`;
       const size = `${rand(12, 26).toFixed(0)}px`;
-      const duration = `${rand(6, 16).toFixed(2)}s`;
-      const delay = `${rand(-16, 0).toFixed(2)}s`; // negative = already in motion on load
+      const duration = `${rand(8, 18).toFixed(2)}s`; // Slower = less CPU
+      const delay = `${rand(-18, 0).toFixed(2)}s`;
       const driftX = `${rand(-120, 120).toFixed(0)}px`;
       const driftY = `${rand(-90, 90).toFixed(0)}px`;
       const opacity = `${rand(0.25, 0.9).toFixed(2)}`;
@@ -69,7 +69,6 @@ export default function AnimatedBackground() {
               left: p.left,
               top: p.top,
               fontSize: p.size,
-              opacity: p.opacity,
               "--dur": p.duration,
               "--delay": p.delay,
               "--dx": p.driftX,
