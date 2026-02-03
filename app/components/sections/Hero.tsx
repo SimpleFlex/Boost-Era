@@ -23,7 +23,7 @@ export default function Hero({
   const { open } = useAppKit();
 
   // ✅ IMPORTANT: use solana namespace
-  const { isConnected, address } = useAppKitAccount({ namespace: "solana" });
+  const { isConnected } = useAppKitAccount({ namespace: "solana" });
 
   const trimmed = useMemo(() => tokenAddress.trim(), [tokenAddress]);
   const isValid = useMemo(() => isSolanaBase58Address(trimmed), [trimmed]);
@@ -90,21 +90,6 @@ export default function Hero({
           </span>
           <span className="text-white/85">.</span>
         </p>
-
-        {/* ✅ Debug strip (remove later) */}
-        <div className="mt-4 text-xs text-white/50">
-          solana connected:{" "}
-          <span className="text-white/70">{String(isConnected)}</span>{" "}
-          {address ? (
-            <>
-              | wallet:{" "}
-              <span className="text-white/70">
-                {address.slice(0, 4)}…{address.slice(-4)}
-              </span>
-            </>
-          ) : null}{" "}
-          | valid CA: <span className="text-white/70">{String(isValid)}</span>
-        </div>
       </div>
 
       <div className="mx-auto max-w-2xl rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-[0_30px_120px_-70px_rgba(0,0,0,0.55)] sm:p-10">

@@ -7,9 +7,6 @@ import Link from "next/link";
 // ✅ Correct import for App Router + lib folder
 import { PLANS, type PlanId } from "../lib/plans";
 
-// ✅ Your existing Footer
-import Footer from "@/app/components/layout/Footer";
-
 function isBase58SolanaAddress(v: string) {
   const s = v.trim();
   if (s.length < 32 || s.length > 44) return false;
@@ -159,9 +156,6 @@ export default function PromotePage() {
           </button>
         </div>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

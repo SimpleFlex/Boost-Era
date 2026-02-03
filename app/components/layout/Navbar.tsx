@@ -15,8 +15,7 @@ function shortAddr(addr?: string | null) {
 export default function Navbar() {
   const { open } = useAppKit();
 
-  // ✅ IMPORTANT: bind to solana namespace so state matches the wallets you're connecting
-  const { isConnected, address, status } = useAppKitAccount({
+  const { isConnected, address } = useAppKitAccount({
     namespace: "solana",
   });
 
@@ -24,17 +23,13 @@ export default function Navbar() {
 
   const handleWalletClick = () => {
     if (isConnected) {
-      // ✅ When connected, show account
       open({ view: "Account" });
       return;
     }
-
-    // ✅ When disconnected, force Solana connect screen
     open({ view: "Connect", namespace: "solana" });
   };
 
   const handleDisconnect = async () => {
-    // disconnect only solana session (clean logout)
     await disconnect({ namespace: "solana" });
   };
 
@@ -70,27 +65,14 @@ export default function Navbar() {
                 <span aria-hidden>🎁</span> MemeDrop
               </Link>
 
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleWalletClick}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white backdrop-blur-xl transition"
-                >
-                  {isConnected ? `✓ ${shortAddr(address)}` : " Connect Wallet"}
-                </button>
-
-                {isConnected && (
-                  <button
-                    onClick={handleDisconnect}
-                    className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white/90 hover:bg-white/10 transition"
-                  >
-                    Disconnect
-                  </button>
-                )}
-              </div>
+              {/* ✅ MOBILE: NO DISCONNECT BUTTON */}
+              <button
+                onClick={handleWalletClick}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white backdrop-blur-xl transition"
+              >
+                {isConnected ? `✓ ${shortAddr(address)}` : "Connect Wallet"}
+              </button>
             </div>
-
-            {/* Optional tiny status line for debugging */}
-            <p className="mt-2 text-xs text-white/50">status: {status}</p>
           </div>
 
           {/* DESKTOP */}
@@ -126,9 +108,10 @@ export default function Navbar() {
                   onClick={handleWalletClick}
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-semibold text-white backdrop-blur-xl transition"
                 >
-                  {isConnected ? `✓ ${shortAddr(address)}` : " Connect Wallet"}
+                  {isConnected ? `✓ ${shortAddr(address)}` : "Connect Wallet"}
                 </button>
 
+                {/* ✅ DESKTOP: KEEP DISCONNECT */}
                 {isConnected && (
                   <button
                     onClick={handleDisconnect}
