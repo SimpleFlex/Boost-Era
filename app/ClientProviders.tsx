@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import ContextProvider from "./components/context/index"; // your wagmi/appkit context
-import { Providers as SolanaProviders } from "./components/providers"; // your SolanaProvider wrapper
+import ContextProvider from "./components/context/index";
 
 export default function ClientProviders({
   children,
@@ -11,9 +10,5 @@ export default function ClientProviders({
   children: React.ReactNode;
   cookies: string | null;
 }) {
-  return (
-    <ContextProvider cookies={cookies}>
-      <SolanaProviders net="mainnet">{children}</SolanaProviders>
-    </ContextProvider>
-  );
+  return <ContextProvider cookies={cookies}>{children}</ContextProvider>;
 }
