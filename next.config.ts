@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["ws"],
+  images: {
+    localPatterns: [{ pathname: "/api/image-proxy" }],
+  },
 };
 
 export default nextConfig;

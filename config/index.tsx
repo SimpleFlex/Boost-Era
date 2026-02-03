@@ -1,24 +1,38 @@
-import { cookieStorage, createStorage, http } from "@wagmi/core";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { mainnet, arbitrum, solana } from "@reown/appkit/networks";
+// config/index.tsx
+import { solana } from "@reown/appkit/networks";
+import { SolanaAdapter } from "@reown/appkit-adapter-solana/react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
+import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 
 // Get projectId from https://dashboard.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
+// ✅ VALIDATE projectId exists
 if (!projectId) {
-  throw new Error("Project ID is not defined");
+  throw new Error(
+    "NEXT_PUBLIC_PROJECT_ID environment variable is not set. " +
+      "Get your Project ID from https://dashboard.reown.com"
+  );
 }
 
-export const networks = [mainnet, arbitrum, solana];
+// Now projectId is guaranteed to be a string (not undefined)
+export const validProjectId = projectId;
 
-//Set up the Wagmi Adapter (Config)
-export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
-  ssr: true,
-  projectId,
-  networks,
+// Solana network ARRAY - TESTNET
+export const networks = [solana] as const;
+
+// Solana Testnet RPC endpoint
+export const solanaRpcUrl = "https://api.testnet.solana.com";
+
+// Set up Solana Adapter
+export const solanaAdapter = new SolanaAdapter({
+  wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
 });
 
-export const config = wagmiAdapter.wagmiConfig;
+// Metadata
+export const metadata = {
+  name: "BoostEra",
+  description: "Promote your Solana meme coins",
+  url: "https://boostera.com",
+  icons: ["https://avatars.githubusercontent.com/u/179229932"],
+};

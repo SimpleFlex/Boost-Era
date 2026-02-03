@@ -1,9 +1,74 @@
 "use client";
 
-export default function Hero() {
+import { useEffect, useMemo, useState } from "react";
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
+import { useRouter } from "next/navigation";
+
+function isSolanaBase58Address(value: string) {
+  const v = value.trim();
+  if (v.length < 32 || v.length > 44) return false;
+  return /^[1-9A-HJ-NP-Za-km-z]+$/.test(v);
+}
+
+export default function Hero({
+  tokenAddress,
+  onTokenAddressChange,
+  onPreview,
+}: {
+  tokenAddress: string;
+  onTokenAddressChange: (v: string) => void;
+  onPreview: () => void;
+}) {
+  const router = useRouter();
+  const { open } = useAppKit();
+
+  // ✅ IMPORTANT: use solana namespace
+  const { isConnected, address } = useAppKitAccount({ namespace: "solana" });
+
+  const trimmed = useMemo(() => tokenAddress.trim(), [tokenAddress]);
+  const isValid = useMemo(() => isSolanaBase58Address(trimmed), [trimmed]);
+
+  // ✅ This controls the button state
+  const canContinue = isConnected && isValid;
+
+  const [touched, setTouched] = useState(false);
+
+  // ✅ Auto-preview when connected + valid CA
+  useEffect(() => {
+    if (!canContinue) return;
+
+    const t = setTimeout(() => {
+      onPreview();
+    }, 350);
+
+    return () => clearTimeout(t);
+  }, [canContinue, onPreview]);
+
+  const buttonLabel = !isConnected
+    ? "Connect Wallet to Promote"
+    : canContinue
+      ? "Continue to Promote"
+      : "Enter Token Address";
+
+  const onClick = () => {
+    if (!isConnected) {
+      open({ view: "Connect", namespace: "solana" });
+      return;
+    }
+
+    setTouched(true);
+
+    if (!isValid) return;
+
+    // Ensure preview is set (for homepage section)
+    onPreview();
+
+    // ✅ Go to backend (plan selection)
+    router.push(`/promote?ca=${encodeURIComponent(trimmed)}`);
+  };
+
   return (
     <section className="mx-auto max-w-6xl px-4 pt-10 pb-12">
-      {/* TOP HERO HEADER (CENTERED, ONE LINE) */}
       <div className="mb-10 text-center">
         <h1 className="text-center text-5xl font-extrabold leading-[1.05] tracking-tight sm:whitespace-nowrap sm:text-7xl md:text-8xl">
           <span className="rainbow-text">Promote Your Meme Coin</span>
@@ -26,24 +91,22 @@ export default function Hero() {
           <span className="text-white/85">.</span>
         </p>
 
-        <div className="mt-10 flex flex-nowrap items-center justify-center gap-4">
-          <span className="inline-flex shrink-0 items-center rounded-2xl border-2 border-white/20 bg-white/10 px-5 py-3 text-xs font-semibold text-white/90 backdrop-blur-xl sm:px-7 sm:py-3.5 sm:text-sm">
-            <span className="mr-3 text-green-400 text-base font-extrabold sm:mr-4">
-              2
-            </span>
-            Easy Steps
-          </span>
-
-          <span className="inline-flex shrink-0 items-center rounded-2xl border-2 border-white/20 bg-white/10 px-5 py-3 text-xs font-semibold text-white/90 backdrop-blur-xl sm:px-7 sm:py-3.5 sm:text-sm">
-            <span className="mr-3 text-yellow-300 text-base font-extrabold">
-              $15
-            </span>
-            Flat Rate
-          </span>
+        {/* ✅ Debug strip (remove later) */}
+        <div className="mt-4 text-xs text-white/50">
+          solana connected:{" "}
+          <span className="text-white/70">{String(isConnected)}</span>{" "}
+          {address ? (
+            <>
+              | wallet:{" "}
+              <span className="text-white/70">
+                {address.slice(0, 4)}…{address.slice(-4)}
+              </span>
+            </>
+          ) : null}{" "}
+          | valid CA: <span className="text-white/70">{String(isValid)}</span>
         </div>
       </div>
 
-      {/* BORDERED GLASS CARD */}
       <div className="mx-auto max-w-2xl rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-[0_30px_120px_-70px_rgba(0,0,0,0.55)] sm:p-10">
         <h2 className="text-center text-2xl font-extrabold tracking-tight sm:text-4xl">
           <span className="rainbow-text">Promote Your Coin</span>
@@ -61,36 +124,36 @@ export default function Hero() {
           </label>
 
           <input
+            value={tokenAddress}
+            onChange={(e) => onTokenAddressChange(e.target.value)}
+            onBlur={() => setTouched(true)}
+            disabled={!isConnected}
             type="text"
-            placeholder="Enter your token contract address..."
-            className="mt-4 w-full rounded-2xl border border-white/15 bg-white/5 px-6 py-4 text-base text-white/90 placeholder:text-white/40 outline-none transition focus:border-white/30"
+            placeholder={
+              isConnected
+                ? "Enter your token contract address..."
+                : "Connect wallet first..."
+            }
+            className="mt-4 w-full rounded-2xl border border-white/15 bg-white/5 px-6 py-4 text-base text-white/90 placeholder:text-white/40 outline-none transition focus:border-white/30 disabled:opacity-50"
           />
 
-          <p className="mt-4 text-sm leading-relaxed">
-            <span className="mr-2">ℹ️</span>
-            <span className="text-white/70">
-              This will be displayed on your{" "}
-            </span>
-            <span className="text-yellow-300 font-semibold">
-              promotion page
-            </span>
-            <span className="text-white/70"> for </span>
-            <span className="text-green-400 font-semibold">
-              maximum visibility
-            </span>
-            <span className="text-white/70">.</span>
-          </p>
+          {isConnected && touched && trimmed && !isValid && (
+            <p className="mt-3 text-sm text-red-300">
+              That doesn’t look like a valid Solana token address.
+            </p>
+          )}
 
           <button
             type="button"
-            className="mt-6 w-full rounded-2xl bg-white px-6 py-4 text-base font-semibold text-black transition hover:opacity-90"
+            onClick={onClick}
+            className="mt-6 w-full rounded-2xl bg-white px-6 py-4 text-base font-semibold text-black transition hover:opacity-90 disabled:opacity-60"
           >
-            Connect Wallet to Promote
+            {buttonLabel}
           </button>
 
           <div className="mt-4 text-center text-sm">
             <span className="text-white/70">Fee:</span>{" "}
-            <span className="text-green-400 font-semibold">~0.1 SOL</span>{" "}
+            <span className="text-green-400 font-semibold">~0.1 SOL</span>
           </div>
         </div>
       </div>

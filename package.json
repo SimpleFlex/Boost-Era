@@ -24,8 +24,9 @@
     "@reown/appkit": "^1.8.17",
     "@reown/appkit-adapter-solana": "^1.8.17",
     "@reown/appkit-adapter-wagmi": "^1.8.17",
-    "@solana/client": "^1.2.0",
-    "@solana/react-hooks": "^1.1.5",
+    "@solana/wallet-adapter-phantom": "^0.9.28",
+    "@solana/wallet-adapter-solflare": "^0.6.32",
+    "@solana/web3.js": "^1.98.4",
     "@tanstack/react-query": "^5.90.20",
     "axios": "^1.13.3",
     "axios-retry": "^4.5.0",
@@ -35,14 +36,14 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "viem": "^2.45.0",
-    "wagmi": "^3.4.1",
-    "ws": "^8.18.3"
+    "ws": "^7.5.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "baseline-browser-mapping": "^2.9.19",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "prettier": "^3.6.2",

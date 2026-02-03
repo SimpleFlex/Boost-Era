@@ -1,13 +1,17 @@
 import Link from "next/link";
 import CountdownStrip from "../components/memedrops/CountdownStrip";
-import MemeDropPanels from "../../app/memedrop/MemeDropPanels";
-import Leaderboard from "../../app/memedrop/Leaderboard";
+import MemeDropPanels from "./MemeDropPanels";
+import Leaderboard from "./Leaderboard";
+import ActivePlanBar from "./components/ActivePlanBar";
 
 export default function MemeDropPage() {
   const nextDrawUtc = "2026-02-02T21:00:00Z";
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 text-white">
+      {/* ✅ Only shows when URL has ?ca=...&plan=... (after payment redirect) */}
+      <ActivePlanBar />
+
       <div className="mb-10 flex justify-end">
         <Link
           href="/"

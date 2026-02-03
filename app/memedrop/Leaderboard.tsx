@@ -1,21 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
-import { LEADERBOARD_PROJECTS } from "./data/leaderboard";
+import { useDexPreview } from "../components/hooks/useDexPreview";
 
-function fmtUsd(n: number) {
+function fmtUsd(n: number | null) {
+  if (typeof n !== "number") return "—";
   if (n >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
   if (n >= 1e6) return `$${(n / 1e6).toFixed(2)}M`;
   if (n >= 1e3) return `$${(n / 1e3).toFixed(2)}K`;
-  return `$${n.toLocaleString()}`;
+  return `$${Math.round(n).toLocaleString()}`;
 }
 
-export default function Leaderboard() {
-  const sorted = [...LEADERBOARD_PROJECTS].sort(
-    (a, b) => b.marketCapUsd - a.marketCapUsd
-  );
+export default function MemedropLeaderboardPreview() {
+  const { data, loading, error } = useDexPreview(30_000);
 
   return (
     <section className="mt-8">
@@ -25,20 +23,26 @@ export default function Leaderboard() {
             🏆 Leaderboard
           </h2>
           <p className="text-xs font-semibold text-white/60">
-            Promoted projects (fast loading)
+            Live preview (DexScreener)
           </p>
         </div>
+
+        {error ? (
+          <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-200">
+            {error}
+          </div>
+        ) : null}
 
         <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/20">
           <div className="grid grid-cols-12 gap-3 border-b border-white/10 px-4 py-3 text-xs font-semibold text-white/60">
             <div className="col-span-1">#</div>
-            <div className="col-span-6">Project</div>
-            <div className="col-span-3 text-right">Market Cap</div>
+            <div className="col-span-6">Token</div>
+            <div className="col-span-3 text-right">MCap</div>
             <div className="col-span-2 text-right">24h</div>
           </div>
 
           <div className="divide-y divide-white/10">
-            {sorted.map((p, idx) => {
+            {(loading ? [] : data).map((p, idx) => {
               const positive = (p.change24hPct ?? 0) >= 0;
 
               return (
@@ -50,45 +54,18 @@ export default function Leaderboard() {
                     {idx + 1}
                   </div>
 
-                  <div className="col-span-6 flex items-center gap-3">
-                    <div className="h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-                      {p.logo ? (
-                        <Image
-                          src={p.logo}
-                          alt={`${p.name} logo`}
-                          width={40}
-                          height={40}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="h-full w-full" />
-                      )}
-                    </div>
-
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-extrabold text-white/90">
-                          {p.name}
-                        </p>
-
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/70">
-                          {p.symbol}
-                        </span>
-
-                        {p.tags?.slice(0, 2).map((t) => (
-                          <span
-                            key={t}
-                            className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-yellow-300/90"
-                          >
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-
-                      <p className="mt-1 truncate text-xs text-white/55">
-                        {p.tokenAddress}
+                  <div className="col-span-6 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-sm font-extrabold text-white/90">
+                        {p.name}
                       </p>
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-semibold text-white/70">
+                        {p.symbol}
+                      </span>
                     </div>
+                    <p className="mt-1 truncate text-xs text-white/55">
+                      {p.tokenAddress}
+                    </p>
                   </div>
 
                   <div className="col-span-3 text-right text-sm font-extrabold text-white/85">
@@ -115,21 +92,26 @@ export default function Leaderboard() {
 
                   <div className="col-span-12 mt-3 flex justify-end">
                     <a
-                      href={`https://dexscreener.com/solana/${p.tokenAddress}`}
+                      href={p.link}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-white/80 hover:bg-white/10"
                     >
-                      View on DexScreener <ExternalLink className="h-4 w-4" />
+                      View chart <ExternalLink className="h-4 w-4" />
                     </a>
                   </div>
                 </div>
               );
             })}
+
+            {loading ? (
+              <div className="px-4 py-6 text-sm text-white/60">
+                Loading live data…
+              </div>
+            ) : null}
           </div>
         </div>
 
-        {/* ✅ See more button */}
         <div className="mt-5 flex justify-end">
           <Link
             href="/leaderboard"

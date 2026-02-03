@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import background from "./public/boost.png";
+import "../globals.css";
 
 import { headers } from "next/headers";
 import ContextProvider from "../components/context";
 import AnimatedBackground from "../components/layout/AnimatedBackground";
-import Footer from "../components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -15,35 +13,32 @@ export const metadata: Metadata = {
   description: "Powered by Reown",
 };
 
-export default async function RootLayout({
+export default async function MemedropLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   const headersObj = await headers();
-  const cookies = headersObj.get("cookie");
+  const cookies = headersObj.get("cookie") ?? "";
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="relative min-h-screen overflow-hidden text-white">
-          <div
-            className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${background.src})` }}
-          />
+    <div className={inter.className}>
+      <div className="relative min-h-screen overflow-hidden text-white">
+        <div
+          className="pointer-events-none absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url(/booost.png)" }}
+        />
 
-          <div className="pointer-events-none absolute inset-0 -z-10 bg-black/60" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-black/60" />
 
-          <div className="relative min-h-screen bg-white/5 backdrop-blur-xl flex flex-col">
-            <AnimatedBackground />
+        <div className="relative min-h-screen bg-white/5 backdrop-blur-xl flex flex-col">
+          <AnimatedBackground />
 
-            <ContextProvider cookies={cookies}>
-              {/* ✅ NO max-w wrapper here */}
-              <div className="flex-1">{children}</div>
-
-              <Footer />
-            </ContextProvider>
-          </div>
+          <ContextProvider cookies={cookies}>
+            <div className="relative z-10 flex-1">{children}</div>
+          </ContextProvider>
         </div>
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

@@ -1,11 +1,8 @@
 "use client";
 
 import { Rocket, Palette, TrendingUp } from "lucide-react";
-import PlatformPreview from "../platforms/PlatformPreview"; // ✅ use your existing component
-
-export default function HowItWorks() {
-  const tokenAddress = "So11111111111111111111111111111111111111112";
-
+import PlatformPreview from "../platforms/PlatformPreview";
+export default function HowItWorks({ tokenAddress }: { tokenAddress: string }) {
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16">
       <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-[0_30px_120px_-70px_rgba(0,0,0,0.55)] sm:p-10">
