@@ -8,51 +8,52 @@ import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 import { validProjectId, metadata } from "@/config";
 
-// Create modal once (safe across HMR/StrictMode)
-let modal: ReturnType<typeof createAppKit> | null = null;
+type AppKitModal = ReturnType<typeof createAppKit>;
+const g = globalThis as unknown as { __appkitModal?: AppKitModal };
 
 function initAppKit() {
-  if (modal) return modal;
+  if (g.__appkitModal) return g.__appkitModal;
+
+  if (!validProjectId) {
+    throw new Error(
+      "Missing Reown projectId (validProjectId). Check your config/env."
+    );
+  }
 
   const solanaAdapter = new SolanaAdapter({
     wallets: [new PhantomWalletAdapter(), new SolflareWalletAdapter()],
   });
 
-  // Default network: devnet in development, mainnet in production
   const defaultNetwork =
     process.env.NODE_ENV === "development" ? solanaDevnet : solana;
 
-  modal = createAppKit({
+  g.__appkitModal = createAppKit({
     adapters: [solanaAdapter],
     projectId: validProjectId,
     networks: [solana, solanaTestnet, solanaDevnet],
     defaultNetwork,
     metadata,
-    features: {
-      analytics: true,
-    },
+    features: { analytics: true },
   });
 
-  return modal;
-}
-
-// initialize immediately on client
-try {
-  initAppKit();
-} catch (err: unknown) {
-  const message = err instanceof Error ? err.message : "Unknown error";
-  console.error("AppKit initialization error:", message);
+  return g.__appkitModal;
 }
 
 type ContextProviderProps = {
   children: ReactNode;
-  cookies?: string | null; // ✅ accept cookies from layout
+  cookies?: string | null;
 };
 
 export default function ContextProvider({ children }: ContextProviderProps) {
-  // For Solana adapter, cookies aren’t required like Wagmi SSR hydration,
-  // but we accept them so your layout can pass cookies without TS errors. :contentReference[oaicite:2]{index=2}
+  // ✅ IMPORTANT: create AppKit BEFORE children render (so hooks work immediately)
+  try {
+    initAppKit();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("AppKit initialization error:", msg);
+  }
+
   return <>{children}</>;
 }
 
-export { modal };
+export const modal = g.__appkitModal;
